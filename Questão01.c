@@ -159,7 +159,7 @@ Matrix* matrix_multiply(Matrix* m, Matrix* n) {
             for (int k = 1; k <= m->column; k++) {
                 multipliedNumber += matrix_getelem(m, x, k) * matrix_getelem(n, k, y);
             }
-            matrix_setelem(resultMatrix, x, y, sum);
+            matrix_setelem(resultMatrix, x, y, multipliedNumber);
         }
     }
 
