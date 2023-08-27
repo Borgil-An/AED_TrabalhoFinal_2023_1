@@ -1,16 +1,16 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-float* matrix_create( unsigned int m );
+float* matrix_create( unsigned int size );
 void matrix_destroy( float* matrix );
 float* matrix_multiply_normal( float* matrix1, float* matrix2, unsigned int size );
 float* matrix_multiply( float* matrix1, float* matrix2, unsigned int size );
+float* matrix_transpose( float* matrix, unsigned int size );
 void test_performance( float* A, float* B, unsigned int size );
 
-int main( void ) {
-    unsigned int size = 5000; 
+int main(void) {
+    unsigned int size = 5000;
 
     float* A = matrix_create(size);
     float* B = matrix_create(size);
@@ -26,7 +26,7 @@ int main( void ) {
 float* matrix_create(unsigned int size) {
     float* matrix = (float*)malloc(size * size * sizeof(float));
     if (matrix == NULL) {
-        printf("Não deu para alocar memória para a matriz\n");
+        printf("Não foi possível alocar memória para a matriz\n");
         return NULL;
     }
 
@@ -43,23 +43,23 @@ void matrix_destroy(float* matrix) {
     if (matrix != NULL) {
         free(matrix);
     }
-    printf ("Desalocando o espaço de sua matriz\n");
+    printf("Desalocando o espaço da matriz\n");
 }
 
 float* matrix_multiply_normal(float* matrix1, float* matrix2, unsigned int size) {
     float* result = (float*)malloc(size * size * sizeof(float));
     if (result == NULL) {
-        printf("Não foi possivel alocar memoria para sua matriz\n");
+        printf("Não foi possível alocar memória para a matriz resultante\n");
         return NULL;
     }
 
     for (unsigned int i = 0; i < size; i++) {
         for (unsigned int j = 0; j < size; j++) {
-            float result = 0.0;
+            float sum = 0.0;
             for (unsigned int k = 0; k < size; k++) {
-                result += matrix1[i * size + k] * matrix2[k * size + j];
+                sum += matrix1[i * size + k] * matrix2[k * size + j];
             }
-            result[i * size + j] = result;
+            result[i * size + j] = sum;
         }
     }
 
@@ -69,21 +69,37 @@ float* matrix_multiply_normal(float* matrix1, float* matrix2, unsigned int size)
 float* matrix_multiply(float* matrix1, float* matrix2, unsigned int size) {
     float* result = (float*)malloc(size * size * sizeof(float));
     if (result == NULL) {
-        printf("Não foi possivel alocar memoria para sua matriz\n");
+        printf("Não foi possível alocar memória para a matriz resultante\n");
         return NULL;
     }
 
     for (unsigned int i = 0; i < size; i++) {
         for (unsigned int j = 0; j < size; j++) {
-            float result = 0.0;
+            float sum = 0.0;
             for (unsigned int k = 0; k < size; k++) {
-                result += matrix1[i * size + k] * matrix2[k * size + j];
+                sum += matrix1[i * size + k] * matrix2[k * size + j];
             }
-            result[i * size + j] = result;
+            result[i * size + j] = sum;
         }
     }
 
     return result;
+}
+
+float* matrix_transpose(float* matrix, unsigned int size) {
+    float* transposed = (float*)malloc(size * size * sizeof(float));
+    if (transposed == NULL) {
+        printf("Não foi possível alocar memória para a matriz transposta\n");
+        return NULL;
+    }
+
+    for (unsigned int i = 0; i < size; i++) {
+        for (unsigned int j = 0; j < size; j++) {
+            transposed[j * size + i] = matrix[i * size + j];
+        }
+    }
+
+    return transposed;
 }
 
 void test_performance(float* A, float* B, unsigned int size) {
@@ -98,7 +114,7 @@ void test_performance(float* A, float* B, unsigned int size) {
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("Multiplicação de Matrizes Esparsas: %.2f segundos\n", cpu_time_used);
-    destroy(C_sparse);
+    matrix_destroy(C_sparse);
 
     // Multiplicação de matrizes normais
     start = clock();
@@ -106,5 +122,13 @@ void test_performance(float* A, float* B, unsigned int size) {
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("Multiplicação de Matrizes Normais: %.2f segundos\n", cpu_time_used);
-    destroy(C_normal);
+    matrix_destroy(C_normal);
+
+    // Transposição de matriz
+    start = clock();
+    float* A_transposed = matrix_transpose(A, size);
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Transposição de Matriz: %.2f segundos\n", cpu_time_used);
+    matrix_destroy(A_transposed);
 }
