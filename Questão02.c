@@ -4,7 +4,7 @@
 #include <time.h>
 
 float* matrix_create( unsigned int m );
-void matrix_destroy( float* matrix, unsigned int size );
+void matrix_destroy( float* matrix );
 float* matrix_multiply_normal( float* matrix1, float* matrix2, unsigned int size );
 float* matrix_multiply( float* matrix1, float* matrix2, unsigned int size );
 void test_performance( float* A, float* B, unsigned int size );
@@ -17,8 +17,8 @@ int main( void ) {
 
     test_performance(A, B, size);
 
-    matrix_destroy(A, size);
-    matrix_destroy(B, size);
+    matrix_destroy(A);
+    matrix_destroy(B);
 
     return 0;
 }
@@ -39,16 +39,17 @@ float* matrix_create(unsigned int size) {
     return matrix;
 }
 
-void matrix_destroy(float* matrix, unsigned int size) {
+void matrix_destroy(float* matrix) {
     if (matrix != NULL) {
         free(matrix);
     }
+    printf ("Desalocando o espaço de sua matriz\n");
 }
 
 float* matrix_multiply_normal(float* matrix1, float* matrix2, unsigned int size) {
     float* result = (float*)malloc(size * size * sizeof(float));
     if (result == NULL) {
-        printf("Unable to allocate memory for the result matrix.\n");
+        printf("Não foi possivel alocar memoria para sua matriz\n");
         return NULL;
     }
 
@@ -68,7 +69,7 @@ float* matrix_multiply_normal(float* matrix1, float* matrix2, unsigned int size)
 float* matrix_multiply(float* matrix1, float* matrix2, unsigned int size) {
     float* result = (float*)malloc(size * size * sizeof(float));
     if (result == NULL) {
-        printf("Unable to allocate memory for the result matrix.\n");
+        printf("Não foi possivel alocar memoria para sua matriz\n");
         return NULL;
     }
 
@@ -97,7 +98,7 @@ void test_performance(float* A, float* B, unsigned int size) {
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("Multiplicação de Matrizes Esparsas: %.2f segundos\n", cpu_time_used);
-    free(C_sparse);
+    destroy(C_sparse);
 
     // Multiplicação de matrizes normais
     start = clock();
@@ -105,5 +106,5 @@ void test_performance(float* A, float* B, unsigned int size) {
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("Multiplicação de Matrizes Normais: %.2f segundos\n", cpu_time_used);
-    free(C_normal);
+    destroy(C_normal);
 }
