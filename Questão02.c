@@ -1,1 +1,109 @@
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+float* matrix_create( unsigned int m );
+void matrix_destroy( float* matrix, unsigned int size );
+float* matrix_multiply_normal( float* matrix1, float* matrix2, unsigned int size );
+float* matrix_multiply( float* matrix1, float* matrix2, unsigned int size );
+void test_performance( float* A, float* B, unsigned int size );
+
+int main( void ) {
+    unsigned int size = 5000; 
+
+    float* A = matrix_create(size);
+    float* B = matrix_create(size);
+
+    test_performance(A, B, size);
+
+    matrix_destroy(A, size);
+    matrix_destroy(B, size);
+
+    return 0;
+}
+
+float* matrix_create(unsigned int size) {
+    float* matrix = (float*)malloc(size * size * sizeof(float));
+    if (matrix == NULL) {
+        printf("Não deu para alocar memória para a matriz\n");
+        return NULL;
+    }
+
+    srand(time(NULL));
+
+    for (unsigned int i = 0; i < size * size; i++) {
+        matrix[i] = (float)rand() / RAND_MAX;
+    }
+
+    return matrix;
+}
+
+void matrix_destroy(float* matrix, unsigned int size) {
+    if (matrix != NULL) {
+        free(matrix);
+    }
+}
+
+float* matrix_multiply_normal(float* matrix1, float* matrix2, unsigned int size) {
+    float* result = (float*)malloc(size * size * sizeof(float));
+    if (result == NULL) {
+        printf("Unable to allocate memory for the result matrix.\n");
+        return NULL;
+    }
+
+    for (unsigned int i = 0; i < size; i++) {
+        for (unsigned int j = 0; j < size; j++) {
+            float result = 0.0;
+            for (unsigned int k = 0; k < size; k++) {
+                result += matrix1[i * size + k] * matrix2[k * size + j];
+            }
+            result[i * size + j] = result;
+        }
+    }
+
+    return result;
+}
+
+float* matrix_multiply(float* matrix1, float* matrix2, unsigned int size) {
+    float* result = (float*)malloc(size * size * sizeof(float));
+    if (result == NULL) {
+        printf("Unable to allocate memory for the result matrix.\n");
+        return NULL;
+    }
+
+    for (unsigned int i = 0; i < size; i++) {
+        for (unsigned int j = 0; j < size; j++) {
+            float result = 0.0;
+            for (unsigned int k = 0; k < size; k++) {
+                result += matrix1[i * size + k] * matrix2[k * size + j];
+            }
+            result[i * size + j] = result;
+        }
+    }
+
+    return result;
+}
+
+void test_performance(float* A, float* B, unsigned int size) {
+    clock_t start, end;
+    double cpu_time_used;
+
+    printf("Teste de Desempenho:\n");
+
+    // Multiplicação de matrizes esparsas
+    start = clock();
+    float* C_sparse = matrix_multiply(A, B, size);
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Multiplicação de Matrizes Esparsas: %.2f segundos\n", cpu_time_used);
+    free(C_sparse);
+
+    // Multiplicação de matrizes normais
+    start = clock();
+    float* C_normal = matrix_multiply_normal(A, B, size);
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Multiplicação de Matrizes Normais: %.2f segundos\n", cpu_time_used);
+    free(C_normal);
+}
