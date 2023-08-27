@@ -55,11 +55,11 @@ float* matrix_multiply_normal(float* matrix1, float* matrix2, unsigned int size)
 
     for (unsigned int i = 0; i < size; i++) {
         for (unsigned int j = 0; j < size; j++) {
-            float sum = 0.0;
+            float op = 0.0;
             for (unsigned int k = 0; k < size; k++) {
-                sum += matrix1[i * size + k] * matrix2[k * size + j];
+                op += matrix1[i * size + k] * matrix2[k * size + j];
             }
-            result[i * size + j] = sum;
+            result[i * size + j] = op;
         }
     }
 
@@ -75,11 +75,11 @@ float* matrix_multiply(float* matrix1, float* matrix2, unsigned int size) {
 
     for (unsigned int i = 0; i < size; i++) {
         for (unsigned int j = 0; j < size; j++) {
-            float sum = 0.0;
+            float op = 0.0;
             for (unsigned int k = 0; k < size; k++) {
-                sum += matrix1[i * size + k] * matrix2[k * size + j];
+                op += matrix1[i * size + k] * matrix2[k * size + j];
             }
-            result[i * size + j] = sum;
+            result[i * size + j] = op;
         }
     }
 
