@@ -315,7 +315,9 @@ Matrix* matrix_inicializator(int l, int c) {
         currentLine->right = newColumn; 
         currentLine = newColumn; 
     }
-
+   
+    matrixI->line = -1;
+    matrixI->column = -1;
     return matrixI;
 }
 
